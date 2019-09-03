@@ -2,41 +2,33 @@
 
 using namespace std;
 
-map <string, double> obtenerDistancia(vector <int> puntosX, vector <int> puntosY) {
+double calcularDistancia(double x1, double y1, double x2, double y2) {
+
+    double resultado;
+    resultado = sqrt(pow(x1-x2, 2) + pow(y1-y2, 2));
+    return resultado;
+
+}
+
+map <string, double> obtenerDistanciaMaxima(vector <double> puntosX, vector <double> puntosY) {
 
     map <string, double> resultado;
     
-    double distanciaMaxima = 0;
-    int size = puntosX.size() - 1, iteraciones = 0;
-    vector <int> posiciones_1;
-    vector <int> posiciones_2;
-    while (size != 0) {
-        iteraciones += size;
-        posiciones_1.push_back(size);
-        size--;
-    }
-    for (int i = posiciones_1.size()-1; i > 0; --i)
-        posiciones_2.push_back(posiciones_1[i]);
+    double distanciaMinima = 10000.0;
+    int size = puntosX.size();
     
-    int pivote = posiciones_2.back();
-    int numero = posiciones_2.back() - 1;
-    int indice = 0;
-
-    for (int j = 0; j < iteraciones; ++j) {
-        cout << "pivote: " << pivote << endl;
-        cout << "numero: " << numero << endl;
-        cout << "indice: " << indice << endl << endl;
-        if (numero < pivote && numero >= 0) {
-            cout << puntosX[indice] << ' ';
-            numero--;
-        } else {
-            posiciones_2.pop_back();
-            indice++;
-            j--;
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j){
+            double distanciaTemporal = calcularDistancia(puntosX[i], puntosY[i], puntosX[j], puntosY[j]);
+            distanciaMinima = (distanciaTemporal < distanciaMinima && distanciaTemporal != 0) ? distanciaTemporal : distanciaMinima;
         }
     }
 
-    resultado["INFINITY"] = distanciaMaxima;
+    if (distanciaMinima < 10000 && distanciaMinima > 0){
+        resultado["NUMERO"] = distanciaMinima;
+    } else{
+        resultado["INFINITY"] = distanciaMinima;
+    }
     return resultado;
 
 }
@@ -46,9 +38,9 @@ int main() {
     int bloques;
     while(scanf("%d", &bloques) == 1) {
         if (bloques != 0) {
-            vector <int> puntosX;
-            vector <int> puntosY;
-            int x, y;
+            vector <double> puntosX;
+            vector <double> puntosY;
+            double x, y;
 
             for (int i = 0; i < bloques; ++i) {
                 cin >> x >> y;
@@ -56,13 +48,15 @@ int main() {
                 puntosY.push_back(y);
             }
 
-            map <string, double> resultado = obtenerDistancia(puntosX, puntosY);
+            map <string, double> resultado = obtenerDistanciaMaxima(puntosX, puntosY);
 
             for (auto itr = resultado.begin(); itr != resultado.end(); itr++) {
-                if (itr->first == "INFINITY")
+                if (itr->first == "INFINITY") {
                     cout << itr->first << endl;
-                else
+                } else {
+                    cout << fixed << setprecision(4);
                     cout << itr->second << endl;
+                }
             }
 
         } else {
